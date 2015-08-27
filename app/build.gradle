@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+ext.extProgram = new Properties()
+extProgram.load(file("app.properties").newDataInputStream())
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
@@ -12,9 +15,13 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            resValue "string", "movie_api_key", extProgram.getProperty("apiKEY")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "movie_api_key", extProgram.getProperty("apiKEY")
         }
     }
 }
