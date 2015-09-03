@@ -9,8 +9,6 @@ import java.util.List;
  */
 public class MovieResult {
 
+    @SuppressWarnings("unused")
     public List<MovieDetails> results;
-    public int page;
-    public int total_pages;
-    public int total_results;
 }

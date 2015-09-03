@@ -14,12 +14,8 @@ public class MovieDetails implements Parcelable{
     public float vote_average;
     public String release_date;
 
-    public MovieDetails()
-    {
 
-    }
-
-    protected MovieDetails(Parcel in) {
+    private MovieDetails(Parcel in) {
         poster_path = in.readString();
         title = in.readString();
         overview = in.readString();

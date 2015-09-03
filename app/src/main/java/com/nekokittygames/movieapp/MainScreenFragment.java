@@ -1,6 +1,8 @@
 package com.nekokittygames.movieapp;
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.nekokittygames.movieapp.network.MovieDbService;
 import com.nekokittygames.movieapp.network.MovieResult;
@@ -29,10 +30,15 @@ import retrofit.Retrofit;
  * A placeholder fragment containing a simple view.
  */
 public class MainScreenFragment extends Fragment {
+    private String mSort;
+    private MovieAdapter mAdapter;
+    private Retrofit mRetrofit;
+    private MovieDbService mMovieService;
+    private ArrayList<MovieDetails> mArray;
 
-    private MovieAdapter mAdapater;
-    protected Retrofit mRetrofit;
-    protected MovieDbService mMovieService;
+    private final static String RESULTS="results";
+    private final static String DATA_BUNDLE="data";
+
     public MainScreenFragment() {
     }
 
@@ -66,7 +72,15 @@ public class MainScreenFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateMovies();
+        if(mArray.size()==0)
+            updateMovies();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(RESULTS,mArray);
+
     }
 
     @Override
@@ -74,16 +88,22 @@ public class MainScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         GridView view= (GridView) inflater.inflate(R.layout.fragment_main_screen, container, false);
 
+        mArray= new ArrayList<>();
+        if(savedInstanceState!=null && savedInstanceState.containsKey(RESULTS))
+        {
+            mArray=savedInstanceState.getParcelableArrayList(RESULTS);
+        }
 
 
-        mAdapater=new MovieAdapter(getContext(),R.layout.gridlist_item,new ArrayList<MovieDetails>());
+        mAdapter =new MovieAdapter(getContext(), mArray);
 
-        view.setAdapter(mAdapater);
+        view.setAdapter(mAdapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieDetails details = (MovieDetails) parent.getItemAtPosition(position);
-                Toast.makeText(getContext(), "I am loading the movie " + details.title, Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(getActivity(),DetailActivity.class);
+                intent.putExtra(DATA_BUNDLE, (MovieDetails)parent.getItemAtPosition(position));
+                startActivity(intent);
             }
         });
         mRetrofit=new Retrofit.Builder().baseUrl("http://api.themoviedb.org/").addConverterFactory(GsonConverterFactory.create()).build();
@@ -92,29 +112,33 @@ public class MainScreenFragment extends Fragment {
         return view;
     }
 
-    public class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
+    private class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
     {
 
         @Override
         protected List<MovieDetails> doInBackground(Void... params) {
-            MovieResult result=null;
+            Response<MovieResult> result;
             try {
-                Response<MovieResult> resp = mMovieService.getResults("popularity.desc", getString(R.string.movie_api_key)).execute();
-                result=resp.body();
+                result = mMovieService.getResults(PreferenceManager.getDefaultSharedPreferences(getContext()).getString(getString(R.string.pref_sort),getString(R.string.pref_sort_default)), getString(R.string.movie_api_key)).execute();
             }
             catch (IOException e)
             {
                 Log.e(getClass().getSimpleName(),"Crashed grabbing results",e);
+                return null;
             }
-
-            return result.results;
+            if(!result.isSuccess()) {
+                Log.e(getClass().getSimpleName(),"Error Found: "+result.code());
+                return null;
+            }
+            return result.body().results;
         }
+
 
         @Override
         protected void onPostExecute(List<MovieDetails> result) {
             if(result!=null) {
-                mAdapater.clear();
-                mAdapater.addAll(result);
+                mAdapter.clear();
+                mAdapter.addAll(result);
             }
         }
     }

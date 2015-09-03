@@ -3,7 +3,7 @@ package com.nekokittygames.movieapp;
 /**
  * Created by Katrina on 02/09/2015.
  */
-public class Utilities {
+class Utilities {
 
     public static String getPosterUrl(String input)
     {

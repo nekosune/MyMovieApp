@@ -14,11 +14,11 @@ import java.util.ArrayList;
 /**
  * Created by Katrina on 01/09/2015.
  */
-public class MovieAdapter extends ArrayAdapter<MovieDetails> {
+class MovieAdapter extends ArrayAdapter<MovieDetails> {
 
 
-    public MovieAdapter(Context context, int resource, ArrayList<MovieDetails> objects) {
-        super(context, resource, objects);
+    public MovieAdapter(Context context, ArrayList<MovieDetails> objects) {
+        super(context, R.layout.gridlist_item, objects);
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -32,9 +32,10 @@ public class MovieAdapter extends ArrayAdapter<MovieDetails> {
             view=convertView;
         }
 
-        MovieDetails detail=(MovieDetails)getItem(position);
+        MovieDetails detail= getItem(position);
         ImageView button= (ImageView) view.findViewById(R.id.imageButton);
         Picasso.with(getContext()).load(Utilities.getPosterUrl(detail.poster_path)).into(button);
+        button.setContentDescription(detail.title);
 
         return view;
     }
