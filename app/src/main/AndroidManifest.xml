@@ -34,6 +34,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nekokittygames.movieapp.MainScreen" />
         </activity>
+        <provider
+            android:authorities="com.nekokittygames.movieapp"
+            android:name=".data.MovieProvider" />
     </application>
 
 </manifest>

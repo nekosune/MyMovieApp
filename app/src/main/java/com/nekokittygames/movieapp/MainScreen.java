@@ -1,19 +1,54 @@
 package com.nekokittygames.movieapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainScreen extends AppCompatActivity {
+import com.nekokittygames.movieapp.data.MovieContract;
+
+public class MainScreen extends AppCompatActivity implements MainScreenFragment.Callback{
+
+
+
+
+    protected String mSorting;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    boolean mTwoPane=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_screen);
+        setContentView(R.layout.activity_main);
+        mSorting=Utilities.getSortPreference(this);
+
+        if(findViewById(R.id.movie_detail_container)!=null)
+        {
+            mTwoPane=true;
+            if(savedInstanceState==null)
+            {
+                getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAILFRAGMENT_TAG).commit();
+            }
+        }
+        else
+        {
+            mTwoPane=false;
+        }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!Utilities.getSortPreference(this).equalsIgnoreCase(mSorting))
+        {
+            mSorting=Utilities.getSortPreference(this);
+            MainScreenFragment frag=(MainScreenFragment)getSupportFragmentManager().findFragmentById(R.id.main_fragment);
+            frag.onSortingChange();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -37,5 +72,22 @@ public class MainScreen extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(Uri dataUri) {
+        if(mTwoPane)
+        {
+            Bundle args=new Bundle();
+            args.putParcelable(DetailActivityFragment.DETAIL_URI,dataUri);
+            DetailActivityFragment fragment=new DetailActivityFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,fragment,DETAILFRAGMENT_TAG).commit();
+        }
+        else
+        {
+            Intent intent = new Intent(this, DetailActivity.class).setData(dataUri);
+            startActivity(intent);
+        }
     }
 }

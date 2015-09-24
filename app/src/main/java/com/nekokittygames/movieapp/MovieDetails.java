@@ -13,7 +13,8 @@ public class MovieDetails implements Parcelable{
     public String overview;
     public float vote_average;
     public String release_date;
-
+    public int id;
+    public float popularity;
 
     private MovieDetails(Parcel in) {
         poster_path = in.readString();
@@ -21,6 +22,8 @@ public class MovieDetails implements Parcelable{
         overview = in.readString();
         vote_average = in.readFloat();
         release_date = in.readString();
+        id=in.readInt();
+        popularity=in.readFloat();
     }
 
     public static final Creator<MovieDetails> CREATOR = new Creator<MovieDetails>() {
@@ -47,5 +50,7 @@ public class MovieDetails implements Parcelable{
         dest.writeString(overview);
         dest.writeFloat(vote_average);
         dest.writeString(release_date);
+        dest.writeInt(id);
+        dest.writeFloat(popularity);
     }
 }

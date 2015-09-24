@@ -3,14 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.nekokittygames.movieapp.DetailActivityFragment"
-    android:orientation="vertical"
-    tools:showIn="@layout/activity_detail">
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Minions"
         android:id="@+id/detail_title"
         android:layout_gravity="center"
         android:layout_weight="2"
@@ -36,7 +34,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/detail_poster"
-                    android:src="@android:drawable/sym_def_app_icon"
                     android:layout_weight="1"
                     tools:ignore="ContentDescription" />
                 <LinearLayout
@@ -47,9 +44,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2015"
                         android:id="@+id/detail_date"
                         android:textAppearance="?android:textAppearanceLarge"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/detail_runtime"
+                        android:textAppearance="?android:textAppearanceLarge"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:id="@+id/detail_homepage" />
                 </LinearLayout>
 
 
@@ -63,8 +70,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceSmall"
-                    android:id="@+id/detail_synopsis"
-                    android:text="Here"/>
+                    android:id="@+id/detail_synopsis" />
 
                 <RatingBar
                     android:layout_width="wrap_content"
@@ -72,8 +78,42 @@
                     android:isIndicator="true"
                     android:id="@+id/detail_rating"
                     android:numStars="5"
-                    android:rating="7.7"
+                    android:rating="0"
+                    android:visibility="invisible"
                     android:layout_gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trailer_label"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="?android:textAppearanceLarge"/>
+                <View android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:background="#000000" />
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/detail_trailers" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_label"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="?android:textAppearanceLarge"/>
+                <View android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:background="#000000" />
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/detail_reviews" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

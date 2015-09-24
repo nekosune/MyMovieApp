@@ -4,4 +4,12 @@
     tools:context="com.nekokittygames.movieapp.DetailActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_imdb" android:title="@string/action_imdb"
+        android:orderInCategory="101" app:showAsAction="never" />
+    <item android:id="@+id/action_share"
+        android:title="@string/action_share"
+        app:showAsAction="always"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+    <item android:id="@+id/action_favorite" android:title="@string/action_favorite"
+        android:orderInCategory="102" app:showAsAction="ifRoom" />
 </menu>
