@@ -24,6 +24,7 @@ public class MovieProvider extends ContentProvider {
     static final int MOVIE_WITH_ID=101;
     static final int MOVIE_BY_FAVORITES=102;
     static final int FAVORITE=200;
+    static final int FAVORITE_BY_MOVIE=201;
     static final int YOUTUBE=300;
     static final int YOUTUBE_WITH_MOVIE=301;
     static final int REVIEW=400;
@@ -47,6 +48,7 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority,MovieContract.PATH_YOUTUBE,YOUTUBE);
         matcher.addURI(authority,MovieContract.PATH_YOUTUBE+"/#",YOUTUBE_WITH_MOVIE);
         matcher.addURI(authority,MovieContract.PATH_FAVORITE,FAVORITE);
+        matcher.addURI(authority,MovieContract.PATH_FAVORITE+"/#",FAVORITE_BY_MOVIE);
         matcher.addURI(authority,MovieContract.PATH_REVIEW,REVIEW);
         matcher.addURI(authority,MovieContract.PATH_REVIEW+"/#",REVIEW_WITH_MOVIE);
         return matcher;
@@ -64,22 +66,24 @@ public class MovieProvider extends ContentProvider {
         long id;
         switch (sUriMatcher.match(uri))
         {
-            case MOVIE: {
+            case MOVIE:
                 QueryBuilder.setTables(MovieContract.MovieEntry.TABLE_NAME);
                 break;
-            }
-            case YOUTUBE: {
+            case YOUTUBE:
                 QueryBuilder.setTables(MovieContract.YoutubeEntry.TABLE_NAME);
                 break;
-            }
-            case REVIEW: {
+            case REVIEW:
                 QueryBuilder.setTables(MovieContract.ReviewEntry.TABLE_NAME);
                 break;
-            }
-            case FAVORITE: {
+            case FAVORITE:
                 QueryBuilder.setTables(MovieContract.FavoriteEntry.TABLE_NAME);
                 break;
-            }
+            case FAVORITE_BY_MOVIE:
+                QueryBuilder.setTables(MovieContract.FavoriteEntry.TABLE_NAME);
+                id=Long.parseLong(uri.getLastPathSegment());
+                selection=MovieContract.FavoriteEntry.FAVORITE_MOVIE_ID+ " = ?";
+                selectionArgs=new String[] { Long.toString(id)};
+                break;
             case MOVIE_WITH_ID:
                 QueryBuilder.setTables(MovieContract.MovieEntry.TABLE_NAME);
                 id = Long.parseLong(uri.getLastPathSegment());
@@ -128,6 +132,8 @@ public class MovieProvider extends ContentProvider {
                 return MovieContract.ReviewEntry.CONTENT_TYPE;
             case FAVORITE:
                 return MovieContract.FavoriteEntry.CONTENT_TYPE;
+            case FAVORITE_BY_MOVIE:
+                return MovieContract.FavoriteEntry.CONTENT_ITEM_TYPE;
             case MOVIE_WITH_ID:
                 return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
             case YOUTUBE_WITH_MOVIE:

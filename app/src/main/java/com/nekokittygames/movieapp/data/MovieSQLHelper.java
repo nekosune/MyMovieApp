@@ -40,7 +40,8 @@ public class MovieSQLHelper extends SQLiteOpenHelper {
                 YoutubeEntry.YOUTUBE_MOVIE_ID + " INTEGER NOT NULL ," +
                 YoutubeEntry.YOUTUBE_NAME + " TEXT NOT NULL, " +
                 YoutubeEntry.YOUTUBE_KEY + " TEXT NOT NULL, " +
-                " FOREIGN KEY (" + YoutubeEntry.YOUTUBE_MOVIE_ID + ") REFERENCES " + MovieEntry.TABLE_NAME + " ("+MovieEntry.MOVIE_ID+"));";
+                " FOREIGN KEY (" + YoutubeEntry.YOUTUBE_MOVIE_ID + ") REFERENCES " + MovieEntry.TABLE_NAME + " ("+MovieEntry.MOVIE_ID+")"+
+                " UNIQUE ("+YoutubeEntry.YOUTUBE_KEY+") ON CONFLICT REPLACE);";
         db.execSQL(SQL_CREATE_YOUTUBE_TABLE);
 
         final String SQL_CREATE_REVIEW_TABLE="CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
@@ -49,7 +50,8 @@ public class MovieSQLHelper extends SQLiteOpenHelper {
                 ReviewEntry.REVIEW_AUTHOR + " TEXT NOT NULL, " +
                 ReviewEntry.REVIEW_CONTENT + " TEXT NOT NULL, " +
                 ReviewEntry.REVIEW_URL + " TEXT NOT NULL, " +
-                " FOREIGN KEY (" + ReviewEntry.REVIEW_MOVIE_ID + ") REFERENCES " + MovieEntry.TABLE_NAME + " ("+MovieEntry.MOVIE_ID+"));";
+                " FOREIGN KEY (" + ReviewEntry.REVIEW_MOVIE_ID + ") REFERENCES " + MovieEntry.TABLE_NAME + " ("+MovieEntry.MOVIE_ID+")"+
+                " UNIQUE ("+ReviewEntry.REVIEW_CONTENT+") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_REVIEW_TABLE);
 

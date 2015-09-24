@@ -1,12 +1,14 @@
 package com.nekokittygames.movieapp;
 
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
@@ -19,10 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -32,7 +32,7 @@ import com.squareup.picasso.Picasso;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailActivityFragment extends Fragment {
 
 
     static final String DETAIL_URI = "URI";
@@ -65,8 +65,7 @@ public class DetailActivityFragment extends Fragment implements android.support.
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER,null,this);
-        getLoaderManager().initLoader(FAVORITE_LOADER,null,this);
+        getLoaderManager().initLoader(DETAIL_LOADER,null,new DetailLoader());
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -153,36 +152,136 @@ public class DetailActivityFragment extends Fragment implements android.support.
         mTrailersView=(LinearLayout)view.findViewById(R.id.detail_trailers);
         mReviewsView=(LinearLayout)view.findViewById(R.id.detail_reviews);
 
-
         return view;
     }
 
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case DETAIL_LOADER:
-                if (mUri != null) {
-
-                    return new CursorLoader(getActivity(), mUri, null, null, null, null);
-                }
-                return null;
-            case YOUTUBE_LOADER:
-                return new CursorLoader(getActivity(), MovieContract.YoutubeEntry.buildUri(movieID), null, null, null, null);
-            case REVIEW_LOADER:
-                return new CursorLoader(getActivity(), MovieContract.ReviewEntry.buildUri(movieID), null, null, null, null);
-            case FAVORITE_LOADER:
-                if(mUri!=null)
-                    return new CursorLoader(getActivity(), MovieContract.FavoriteEntry.CONTENT_URI,null,MovieContract.FavoriteEntry.FAVORITE_MOVIE_ID+" = ?",new String[]{mUri.getLastPathSegment()},null);
-        }
-        return null;
+    private Intent getShareIntent()
+    {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, Utilities.getYoutubeLink(mYoutubeKey).toString());
+        return shareIntent;
     }
 
+    public class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    {
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(getActivity(), MovieContract.ReviewEntry.buildUri(movieID), null, null, null, null);
+        }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(loader.getId()==DETAIL_LOADER) {
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            while (data.moveToNext()) {
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.rewview_item, mReviewsView, false);
+                ((TextView) view.findViewById(R.id.review_author)).setText(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_AUTHOR)));
+                ((TextView) view.findViewById(R.id.review_content)).setText(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_CONTENT)));
+                view.setTag(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_URL)));
+
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String link = (String) v.getTag();
+
+                        if (link != null) {
+                            Intent i = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(link));
+                            startActivity(i);
+                        }
+                    }
+                });
+                mReviewsView.addView(view);
+            }
+            getLoaderManager().initLoader(FAVORITE_LOADER,null,new FavoriteLoader());
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    }
+    public class YoutubeLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(getActivity(), MovieContract.YoutubeEntry.buildUri(movieID), null, null, null, null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            while (data.moveToNext()) {
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.youtube_item, mTrailersView, false);
+                ((TextView) view.findViewById(R.id.youtube_name)).setText(data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_NAME)));
+                String key = data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_KEY));
+                Picasso.with(getActivity()).load(Utilities.getYoutubeURL(key)).into((ImageView) view.findViewById(R.id.youtube_picture));
+                view.setTag(key);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String id = (String) v.getTag();
+
+                        if (id != null) {
+                            Intent i = new Intent(Intent.ACTION_VIEW).setData(Utilities.getYoutubeLink(id));
+                            startActivity(i);
+                        }
+                    }
+                });
+                if (mYoutubeKey == null)
+                    mYoutubeKey = key;
+                mTrailersView.addView(view);
+            }
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(getShareIntent());
+            }
+            getLoaderManager().initLoader(REVIEW_LOADER, null, new ReviewLoader());
+
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    }
+    public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            if(mUri!=null)
+                return new CursorLoader(getActivity(), MovieContract.FavoriteEntry.buildUri(Long.parseLong(mUri.getLastPathSegment())),null,null,null,null);
+            return null;
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            mIsFavorite = data.getCount() != 0;
+
+            if (mFavorite != null) {
+                setMenu();
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    }
+    public class DetailLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            if (mUri != null) {
+
+                return new CursorLoader(getActivity(), mUri, null, null, null, null);
+            }
+            return null;
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (data == null || !data.moveToNext())
                 return;
             mTextTitle.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_TITLE)));
@@ -200,80 +299,14 @@ public class DetailActivityFragment extends Fragment implements android.support.
                 homepage = "<a href=\"" + homepage + "\">Homepage</a>";
                 mHomepageView.setText(Html.fromHtml(homepage));
             }
-            movieID=data.getLong(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_ID));
-            getLoaderManager().initLoader(YOUTUBE_LOADER,null,this);
-            getLoaderManager().initLoader(REVIEW_LOADER,null,this);
-        }
-        else if(loader.getId()==YOUTUBE_LOADER)
-        {
-            while(data.moveToNext()) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.youtube_item, mTrailersView, false);
-                        ((TextView) view.findViewById(R.id.youtube_name)).setText(data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_NAME)));
-                String key=data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_KEY));
-                Picasso.with(getActivity()).load(Utilities.getYoutubeURL(key)).into((ImageView) view.findViewById(R.id.youtube_picture));
-                view.setTag(key);
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String id = (String) v.getTag();
-
-                        if (id != null) {
-                            Intent i=new Intent(Intent.ACTION_VIEW).setData(Utilities.getYoutubeLink(id));
-                            startActivity(i);
-                        }
-                    }
-                });
-                if(mYoutubeKey==null)
-                    mYoutubeKey=key;
-                mTrailersView.addView(view);
-            }
-            if (mShareActionProvider != null) {
-                mShareActionProvider.setShareIntent(getShareIntent());
-            }
+            movieID = data.getLong(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_ID));
+            getLoaderManager().initLoader(YOUTUBE_LOADER, null, new YoutubeLoader());
 
         }
-        else if(loader.getId()==REVIEW_LOADER)
-        {
-            while(data.moveToNext()) {
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.rewview_item,mReviewsView,false);
-                ((TextView) view.findViewById(R.id.review_author)).setText(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_AUTHOR)));
-                ((TextView) view.findViewById(R.id.review_content)).setText(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_CONTENT)));
-                view.setTag(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_URL)));
 
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String link = (String) v.getTag();
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
 
-                        if (link != null) {
-                            Intent i=new Intent(Intent.ACTION_VIEW).setData(Uri.parse(link));
-                            startActivity(i);
-                        }
-                    }
-                });
-                mReviewsView.addView(view);
-            }
         }
-        else if(loader.getId()==FAVORITE_LOADER)
-        {
-            mIsFavorite=data.getCount()!=0;
-
-            if(mFavorite!=null) {
-                setMenu();
-            }
-        }
-
-    }
-
-    private Intent getShareIntent()
-    {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, Utilities.getYoutubeLink(mYoutubeKey).toString());
-        return shareIntent;
-    }
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
     }
 }

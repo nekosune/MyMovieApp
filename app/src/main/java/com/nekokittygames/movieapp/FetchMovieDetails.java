@@ -23,12 +23,13 @@ import retrofit.Retrofit;
 /**
  * Created by Katrina on 14/09/2015.
  */
-public class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
+public class FetchMovieDetails extends AsyncTask<Void, Integer, Void>
 {
 
     private Context mContext;
     private MovieDbService mMovieService;
     private Retrofit mRetrofit;
+    private int mProgress=0;
     public FetchMovieDetails(Context context)
     {
         mContext=context;
@@ -36,7 +37,7 @@ public class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
         mMovieService=mRetrofit.create(MovieDbService.class);
     }
     @Override
-    protected List<MovieDetails> doInBackground(Void... params) {
+    protected Void doInBackground(Void... params) {
         Response<MovieResult> result;
         try {
             result = mMovieService.getResults("popularity.desc", mContext.getString(R.string.movie_api_key)).execute();
@@ -56,7 +57,7 @@ public class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
         List<ContentValues> movieReviews=new ArrayList<>();
         for(MovieDetails details: res.results)
         {
-
+            publishProgress(++mProgress);
             Response<com.nekokittygames.movieapp.network.MovieDetails> detailResponse;
             try {
                 detailResponse = mMovieService.getDetails(Integer.toString(details.id),mContext.getString(R.string.movie_api_key)).execute();
@@ -129,11 +130,19 @@ public class FetchMovieDetails extends AsyncTask<Void, Void, List<MovieDetails>>
         }
 
 
-        return result.body().results;
+        return null;
     }
 
 
     @Override
-    protected void onPostExecute(List<MovieDetails> result) {
+    protected void onPostExecute(Void result) {
+        MainScreenFragment.progress.dismiss();
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        MainScreenFragment.progress.setProgress(values[0]);
+
     }
 }

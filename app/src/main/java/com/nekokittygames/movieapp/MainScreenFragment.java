@@ -1,5 +1,6 @@
 package com.nekokittygames.movieapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -57,7 +58,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     private MovieAdapter mAdapter;
 
     private final static String RESULTS="results";
-
+    public static ProgressDialog progress;
     public MainScreenFragment() {
     }
 
@@ -85,7 +86,9 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     }
 
     private void updateMovies() {
+
         new FetchMovieDetails(getActivity()).execute();
+        progress.show();
     }
 
     @Override
@@ -122,14 +125,18 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor c=(Cursor)parent.getItemAtPosition(position);
-                if(c!=null) {
-                    ((Callback)getActivity()).onItemSelected(MovieContract.MovieEntry.buildUri(c.getLong(COL_MOVIE_ID)));
+                Cursor c = (Cursor) parent.getItemAtPosition(position);
+                if (c != null) {
+                    ((Callback) getActivity()).onItemSelected(MovieContract.MovieEntry.buildUri(c.getLong(COL_MOVIE_ID)));
                 }
             }
         });
-
-        Cursor c=getActivity().getContentResolver().query(MovieContract.MovieEntry.FAVORITE_URI,null,null,null,null);
+        progress=new ProgressDialog(getActivity());
+        progress.setMax(21);
+        progress.setMessage("Loading Movies");
+        progress.setTitle("Loading");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setIndeterminate(false);
         return view;
     }
 
