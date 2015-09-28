@@ -1,7 +1,6 @@
 package com.nekokittygames.movieapp;
 
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -49,10 +48,10 @@ public class DetailActivityFragment extends Fragment {
     private LinearLayout mReviewSection;
     private String imdbId=null;
     private long movieID=-1;
-    static final int DETAIL_LOADER=0;
-    static final int YOUTUBE_LOADER=1;
-    static final int REVIEW_LOADER=2;
-    static final int FAVORITE_LOADER=3;
+    private static final int DETAIL_LOADER=0;
+    private static final int YOUTUBE_LOADER=1;
+    private static final int REVIEW_LOADER=2;
+    private static final int FAVORITE_LOADER=3;
     private ShareActionProvider mShareActionProvider;
     private boolean mIsFavorite;
     private MenuItem mFavorite;
@@ -168,7 +167,7 @@ public class DetailActivityFragment extends Fragment {
         return shareIntent;
     }
 
-    public class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    private class ReviewLoader implements LoaderManager.LoaderCallbacks<Cursor>
     {
 
         @Override
@@ -207,7 +206,7 @@ public class DetailActivityFragment extends Fragment {
 
         }
     }
-    public class YoutubeLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    private class YoutubeLoader implements LoaderManager.LoaderCallbacks<Cursor>
     {
 
         @Override
@@ -224,6 +223,7 @@ public class DetailActivityFragment extends Fragment {
                 ((TextView) view.findViewById(R.id.youtube_name)).setText(data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_NAME)));
                 String key = data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_KEY));
                 Picasso.with(getActivity()).load(Utilities.getYoutubeURL(key)).into((ImageView) view.findViewById(R.id.youtube_picture));
+                view.findViewById(R.id.youtube_picture).setContentDescription(data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_NAME)));
                 view.setTag(key);
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -252,7 +252,7 @@ public class DetailActivityFragment extends Fragment {
 
         }
     }
-    public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    private class FavoriteLoader implements LoaderManager.LoaderCallbacks<Cursor>
     {
 
         @Override
@@ -276,7 +276,7 @@ public class DetailActivityFragment extends Fragment {
 
         }
     }
-    public class DetailLoader implements LoaderManager.LoaderCallbacks<Cursor>
+    private class DetailLoader implements LoaderManager.LoaderCallbacks<Cursor>
     {
 
         @Override
@@ -298,7 +298,7 @@ public class DetailActivityFragment extends Fragment {
             mSynopsisView.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_SYNOPSIS)));
             mDateView.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_RELEASE_DATE)));
             Picasso.with(getContext()).load(Utilities.getPosterUrl(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_POSTER)))).into(mImageView);
-            mRuntimeView.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_RUNTIME)) + " min");
+            mRuntimeView.setText( String.format(getString(R.string.runtime), data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_RUNTIME))));
             mImageView.setContentDescription(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_TITLE)));
             imdbId = data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_IMDB_ID));
 

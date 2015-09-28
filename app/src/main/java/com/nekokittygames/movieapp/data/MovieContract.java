@@ -2,11 +2,8 @@ package com.nekokittygames.movieapp.data;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.BaseColumns;
-
-import java.net.URI;
 
 /**
  * Created by Katrina on 14/09/2015.
@@ -16,7 +13,7 @@ public class MovieContract {
 
     public static final String CONTENT_AUTHORITY = "com.nekokittygames.movieapp";
 
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_MOVIE = "movie";
     public static final String PATH_YOUTUBE = "youtube";

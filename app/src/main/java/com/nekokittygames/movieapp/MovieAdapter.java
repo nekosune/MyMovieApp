@@ -5,15 +5,10 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.nekokittygames.movieapp.data.MovieContract;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 /**
  * Created by Katrina on 01/09/2015.
@@ -27,8 +22,8 @@ class MovieAdapter extends CursorAdapter {
         }
     }
 
-    public MovieAdapter(Context context, Cursor c,int flags) {
-        super(context, c, flags);
+    public MovieAdapter(Context context, Cursor c, @SuppressWarnings("SameParameterValue") int flags) {
+        super(context, null, flags);
     }
 
     @Override

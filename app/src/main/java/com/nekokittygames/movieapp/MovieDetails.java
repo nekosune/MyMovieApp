@@ -8,13 +8,13 @@ import android.os.Parcelable;
  */
 public class MovieDetails implements Parcelable{
 
-    public String poster_path;
-    public String title;
-    public String overview;
-    public float vote_average;
-    public String release_date;
-    public int id;
-    public float popularity;
+    private final String poster_path;
+    private final String title;
+    private final String overview;
+    private final float vote_average;
+    private final String release_date;
+    public final int id;
+    private final float popularity;
 
     private MovieDetails(Parcel in) {
         poster_path = in.readString();

@@ -4,7 +4,7 @@ package com.nekokittygames.movieapp.network;
 
 import com.google.gson.annotations.Expose;
 
-public class ProductionCompany {
+class ProductionCompany {
 
     @Expose
     private String name;

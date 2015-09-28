@@ -5,7 +5,7 @@ package com.nekokittygames.movieapp.network;
 import com.google.gson.annotations.Expose;
 
 
-public class Genre {
+class Genre {
 
     @Expose
     private Integer id;

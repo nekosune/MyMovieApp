@@ -54,7 +54,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     static final int COL__ID =0;
     static final int COL_POSTER=1;
     static final int COL_TITLE=2;
-    static final int COL_MOVIE_ID=3;
+    private static final int COL_MOVIE_ID=3;
     private int mPosition = GridView.INVALID_POSITION;
     private MovieAdapter mAdapter;
 
@@ -89,10 +89,6 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         MovieAppSyncAdapter.syncImmediately(getActivity());
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -156,7 +152,8 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         mAdapter.swapCursor(data);
         if(mPosition!=GridView.INVALID_POSITION)
         {
-            ((GridView)getView()).smoothScrollToPosition(mPosition);
+            if(((GridView)getView()) != null)
+                ((GridView)getView()).smoothScrollToPosition(mPosition);
         }
     }
 

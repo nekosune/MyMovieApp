@@ -19,6 +19,7 @@
     <string name="action_share">Share</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_unfavorite">Unfavorite</string>
+    <string name="runtime">%1$s min</string>
     <string name="sync_account_type">movieapp.nekokittygames.com</string>
     <string name="content_authority">com.nekokittygames.movieapp</string>
 </resources>

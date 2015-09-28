@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.nekokittygames.movieapp" >
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
@@ -9,6 +10,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backupscheme"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -39,16 +41,20 @@
         </activity>
         <provider
             android:authorities="com.nekokittygames.movieapp"
-            android:name=".data.MovieProvider" />
+            android:name=".data.MovieProvider"
+            android:exported="false"
+            />
 
-        <service android:name=".sync.MovieAppAuthenticatorService">
+        <service android:name=".sync.MovieAppAuthenticatorService"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
         </service>
 
-        <service android:name=".sync.MovieAppSyncService" >
+        <service android:name=".sync.MovieAppSyncService"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>

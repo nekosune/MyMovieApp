@@ -4,7 +4,7 @@ package com.nekokittygames.movieapp.network;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ProductionCountry {
+class ProductionCountry {
 
     @SerializedName("iso_3166_1")
     @Expose

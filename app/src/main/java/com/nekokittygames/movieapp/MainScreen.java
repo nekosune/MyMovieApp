@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.nekokittygames.movieapp.data.MovieContract;
 import com.nekokittygames.movieapp.sync.MovieAppSyncAdapter;
 
 public class MainScreen extends AppCompatActivity implements MainScreenFragment.Callback{
@@ -15,10 +14,10 @@ public class MainScreen extends AppCompatActivity implements MainScreenFragment.
 
 
 
-    protected String mSorting;
-    public static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private String mSorting;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
-    boolean mTwoPane=false;
+    private boolean mTwoPane=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

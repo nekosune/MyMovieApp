@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -20,15 +21,15 @@ public class MovieProvider extends ContentProvider {
 
     private MovieSQLHelper mOpenHelper;
 
-    static final int MOVIE=100;
-    static final int MOVIE_WITH_ID=101;
-    static final int MOVIE_BY_FAVORITES=102;
-    static final int FAVORITE=200;
-    static final int FAVORITE_BY_MOVIE=201;
-    static final int YOUTUBE=300;
-    static final int YOUTUBE_WITH_MOVIE=301;
-    static final int REVIEW=400;
-    static final int REVIEW_WITH_MOVIE=401;
+    private static final int MOVIE=100;
+    private static final int MOVIE_WITH_ID=101;
+    private static final int MOVIE_BY_FAVORITES=102;
+    private static final int FAVORITE=200;
+    private static final int FAVORITE_BY_MOVIE=201;
+    private static final int YOUTUBE=300;
+    private static final int YOUTUBE_WITH_MOVIE=301;
+    private static final int REVIEW=400;
+    private static final int REVIEW_WITH_MOVIE=401;
 
     private static final SQLiteQueryBuilder QueryBuilder;
 
@@ -37,7 +38,7 @@ public class MovieProvider extends ContentProvider {
     }
 
 
-    static UriMatcher buildUriMatcher()
+    private static UriMatcher buildUriMatcher()
     {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
@@ -61,7 +62,7 @@ public class MovieProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
         long id;
         switch (sUriMatcher.match(uri))
@@ -118,7 +119,7 @@ public class MovieProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match=sUriMatcher.match(uri);
         switch (match)
         {
@@ -147,7 +148,7 @@ public class MovieProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
 
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
@@ -193,7 +194,7 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
@@ -223,7 +224,7 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsUpdated;
@@ -252,7 +253,7 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final int match = sUriMatcher.match(uri);
         switch (match)
         {

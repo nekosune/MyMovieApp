@@ -2,8 +2,6 @@ package com.nekokittygames.movieapp.network;
 
 
 
-import com.nekokittygames.movieapp.*;
-
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
