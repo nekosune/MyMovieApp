@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 /**
  * Created by Katrina on 02/09/2015.
  */
-class Utilities {
+public class Utilities {
 
     public static String getPosterUrl(String input)
     {

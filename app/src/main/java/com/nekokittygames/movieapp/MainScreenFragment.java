@@ -17,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
 
 import com.nekokittygames.movieapp.data.MovieContract;
+import com.nekokittygames.movieapp.sync.MovieAppSyncAdapter;
 
 import java.util.ArrayList;
 
@@ -36,11 +38,10 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dataUri);
+        void onItemSelected(Uri dataUri);
     }
 
-    private String mSort;
-    private boolean mFavorited;
+    private static final String SELECTED_KEY = "selected_position";
     private static final int MOVIE_LOADER = 0;
 
     private static final String[] MOVIE_COLUMNS = {
@@ -54,11 +55,10 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     static final int COL_POSTER=1;
     static final int COL_TITLE=2;
     static final int COL_MOVIE_ID=3;
-
+    private int mPosition = GridView.INVALID_POSITION;
     private MovieAdapter mAdapter;
 
     private final static String RESULTS="results";
-    public static ProgressDialog progress;
     public MainScreenFragment() {
     }
 
@@ -86,9 +86,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     }
 
     private void updateMovies() {
-
-        new FetchMovieDetails(getActivity()).execute();
-        progress.show();
+        MovieAppSyncAdapter.syncImmediately(getActivity());
     }
 
     @Override
@@ -99,6 +97,9 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mPosition != GridView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
 
     }
 
@@ -112,7 +113,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public void onSortingChange()
     {
         updateMovies();
-        getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -129,14 +130,13 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                 if (c != null) {
                     ((Callback) getActivity()).onItemSelected(MovieContract.MovieEntry.buildUri(c.getLong(COL_MOVIE_ID)));
                 }
+                mPosition=position;
             }
         });
-        progress=new ProgressDialog(getActivity());
-        progress.setMax(21);
-        progress.setMessage("Loading Movies");
-        progress.setTitle("Loading");
-        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progress.setIndeterminate(false);
+        if(savedInstanceState!=null && savedInstanceState.containsKey(SELECTED_KEY))
+        {
+            mPosition=savedInstanceState.getInt(SELECTED_KEY);
+        }
         return view;
     }
 
@@ -154,10 +154,16 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         mAdapter.swapCursor(data);
+        if(mPosition!=GridView.INVALID_POSITION)
+        {
+            ((GridView)getView()).smoothScrollToPosition(mPosition);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
     }
+
+
 }

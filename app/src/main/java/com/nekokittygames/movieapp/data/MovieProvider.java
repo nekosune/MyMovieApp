@@ -81,27 +81,27 @@ public class MovieProvider extends ContentProvider {
             case FAVORITE_BY_MOVIE:
                 QueryBuilder.setTables(MovieContract.FavoriteEntry.TABLE_NAME);
                 id=Long.parseLong(uri.getLastPathSegment());
-                selection=MovieContract.FavoriteEntry.FAVORITE_MOVIE_ID+ " = ?";
+                selection=MovieContract.FavoriteEntry.TABLE_NAME+"."+MovieContract.FavoriteEntry.FAVORITE_MOVIE_ID+ " = ?";
                 selectionArgs=new String[] { Long.toString(id)};
                 break;
             case MOVIE_WITH_ID:
                 QueryBuilder.setTables(MovieContract.MovieEntry.TABLE_NAME);
                 id = Long.parseLong(uri.getLastPathSegment());
-                selection = MovieContract.MovieEntry.MOVIE_ID+" = ?";
+                selection = MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.MOVIE_ID+" = ?";
                 selectionArgs = new String[]{Long.toString(id)};
                 break;
 
             case YOUTUBE_WITH_MOVIE:
                 QueryBuilder.setTables(MovieContract.YoutubeEntry.TABLE_NAME);
                 id = Long.parseLong(uri.getLastPathSegment());
-                selection = MovieContract.YoutubeEntry.YOUTUBE_MOVIE_ID+" = ?";
+                selection = MovieContract.YoutubeEntry.TABLE_NAME+"."+MovieContract.YoutubeEntry.YOUTUBE_MOVIE_ID+" = ?";
                 selectionArgs = new String[]{Long.toString(id)};
                 break;
 
             case REVIEW_WITH_MOVIE:
                 QueryBuilder.setTables(MovieContract.ReviewEntry.TABLE_NAME);
                 id = Long.parseLong(uri.getLastPathSegment());
-                selection = MovieContract.ReviewEntry.REVIEW_MOVIE_ID+" = ?";
+                selection = MovieContract.ReviewEntry.TABLE_NAME+"."+MovieContract.ReviewEntry.REVIEW_MOVIE_ID+" = ?";
                 selectionArgs = new String[]{Long.toString(id)};
                 break;
             case MOVIE_BY_FAVORITES:

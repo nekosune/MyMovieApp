@@ -45,6 +45,8 @@ public class DetailActivityFragment extends Fragment {
     private TextView mHomepageView;
     private LinearLayout mTrailersView;
     private LinearLayout mReviewsView;
+    private LinearLayout mTrailerSection;
+    private LinearLayout mReviewSection;
     private String imdbId=null;
     private long movieID=-1;
     static final int DETAIL_LOADER=0;
@@ -76,6 +78,10 @@ public class DetailActivityFragment extends Fragment {
 
         MenuItem item=menu.findItem(R.id.action_share);
         mFavorite=menu.findItem(R.id.action_favorite);
+        if(mUri==null)
+            mFavorite.setVisible(false);
+        else
+            mFavorite.setVisible(true);
         mShareActionProvider=(ShareActionProvider) MenuItemCompat.getActionProvider(item);
         setMenu();
         if(mYoutubeKey!=null)
@@ -98,12 +104,6 @@ public class DetailActivityFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent=new Intent(getActivity(),SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
         if(id == R.id.action_imdb)
         {
             if(imdbId!=null)
@@ -151,6 +151,10 @@ public class DetailActivityFragment extends Fragment {
         mHomepageView.setMovementMethod(LinkMovementMethod.getInstance());
         mTrailersView=(LinearLayout)view.findViewById(R.id.detail_trailers);
         mReviewsView=(LinearLayout)view.findViewById(R.id.detail_reviews);
+        mTrailerSection=(LinearLayout)view.findViewById(R.id.trailer_section);
+        mReviewSection=(LinearLayout)view.findViewById(R.id.review_section);
+        mTrailerSection.setVisibility(View.GONE);
+        mReviewSection.setVisibility(View.GONE);
 
         return view;
     }
@@ -174,6 +178,8 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if(data.getCount()!=0)
+                mReviewSection.setVisibility(View.VISIBLE);
             while (data.moveToNext()) {
                 View view = LayoutInflater.from(getActivity()).inflate(R.layout.rewview_item, mReviewsView, false);
                 ((TextView) view.findViewById(R.id.review_author)).setText(data.getString(data.getColumnIndex(MovieContract.ReviewEntry.REVIEW_AUTHOR)));
@@ -211,6 +217,8 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if(data.getCount()!=0)
+                mTrailerSection.setVisibility(View.VISIBLE);
             while (data.moveToNext()) {
                 View view = LayoutInflater.from(getActivity()).inflate(R.layout.youtube_item, mTrailersView, false);
                 ((TextView) view.findViewById(R.id.youtube_name)).setText(data.getString(data.getColumnIndex(MovieContract.YoutubeEntry.YOUTUBE_NAME)));

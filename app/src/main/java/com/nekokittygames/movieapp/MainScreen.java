@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nekokittygames.movieapp.data.MovieContract;
+import com.nekokittygames.movieapp.sync.MovieAppSyncAdapter;
 
 public class MainScreen extends AppCompatActivity implements MainScreenFragment.Callback{
 
@@ -15,7 +16,7 @@ public class MainScreen extends AppCompatActivity implements MainScreenFragment.
 
 
     protected String mSorting;
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    public static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     boolean mTwoPane=false;
 
@@ -37,6 +38,7 @@ public class MainScreen extends AppCompatActivity implements MainScreenFragment.
         {
             mTwoPane=false;
         }
+        MovieAppSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
@@ -47,6 +49,8 @@ public class MainScreen extends AppCompatActivity implements MainScreenFragment.
             mSorting=Utilities.getSortPreference(this);
             MainScreenFragment frag=(MainScreenFragment)getSupportFragmentManager().findFragmentById(R.id.main_fragment);
             frag.onSortingChange();
+            if(mTwoPane)
+                getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAILFRAGMENT_TAG).commit();
         }
     }
 
