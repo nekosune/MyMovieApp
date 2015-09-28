@@ -297,7 +297,7 @@ public class DetailActivityFragment extends Fragment {
             mRatingBar.setVisibility(View.VISIBLE);
             mSynopsisView.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_SYNOPSIS)));
             mDateView.setText(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_RELEASE_DATE)));
-            Picasso.with(getContext()).load(Utilities.getPosterUrl(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_POSTER)))).into(mImageView);
+            Picasso.with(getContext()).load(Utilities.getPosterUrl(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_POSTER)))).placeholder(R.mipmap.finding).error(R.mipmap.error).into(mImageView);
             mRuntimeView.setText( String.format(getString(R.string.runtime), data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_RUNTIME))));
             mImageView.setContentDescription(data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_TITLE)));
             imdbId = data.getString(data.getColumnIndex(MovieContract.MovieEntry.MOVIE_IMDB_ID));

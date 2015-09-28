@@ -41,7 +41,7 @@ class MovieAdapter extends CursorAdapter {
 
         ViewHolder holder= (ViewHolder) view.getTag();
 
-        Picasso.with(context).load(Utilities.getPosterUrl(cursor.getString(MainScreenFragment.COL_POSTER))).into(holder.imageView);
+        Picasso.with(context).load(Utilities.getPosterUrl(cursor.getString(MainScreenFragment.COL_POSTER))).placeholder(R.mipmap.finding).error(R.mipmap.error).into(holder.imageView);
         holder.imageView.setContentDescription(cursor.getString(MainScreenFragment.COL_TITLE));
     }
 }
